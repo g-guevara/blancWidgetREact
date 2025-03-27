@@ -1,11 +1,16 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
+import { Image, StyleSheet, Platform, TextInput, TouchableOpacity } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useText } from '@/context/TextContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function HomeScreen() {
+  const { text, setText, saveText } = useText();
+  const textColor = useThemeColor({}, 'text');
+  const placeholderColor = useThemeColor({}, 'tabIconDefault');
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -19,6 +24,37 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      <ThemedView style={styles.inputContainer}>
+        <ThemedText type="subtitle">Your Text Input</ThemedText>
+        <TextInput
+          style={[styles.textInput, { color: textColor }]}
+          value={text}
+          onChangeText={setText}
+          placeholder="Enter text to save locally"
+          placeholderTextColor={placeholderColor}
+          multiline
+        />
+        <TouchableOpacity 
+          style={styles.saveButton} 
+          onPress={saveText}
+        >
+          <ThemedText style={styles.buttonText}>Save</ThemedText>
+        </TouchableOpacity>
+        
+        {/* Display saved text below the Save button */}
+        <ThemedView style={styles.savedTextContainer}>
+          <ThemedText type="defaultSemiBold">Saved Text:</ThemedText>
+          <ThemedView style={styles.savedTextBox}>
+            {text ? (
+              <ThemedText>{text}</ThemedText>
+            ) : (
+              <ThemedText style={styles.emptyText}>No saved text yet</ThemedText>
+            )}
+          </ThemedView>
+        </ThemedView>
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
@@ -59,6 +95,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  inputContainer: {
+    marginVertical: 16,
+    gap: 8,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    minHeight: 100,
+    textAlignVertical: 'top',
+  },
+  saveButton: {
+    backgroundColor: '#0a7ea4', 
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  savedTextContainer: {
+    marginTop: 16,
+    gap: 8,
+  },
+  savedTextBox: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderStyle: 'dashed',
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 60,
+    backgroundColor: 'rgba(0,0,0,0.03)',
+  },
+  emptyText: {
+    fontStyle: 'italic',
+    opacity: 0.6,
   },
   stepContainer: {
     gap: 8,
